@@ -1,4 +1,4 @@
-{{
+{
   "name": "Soundboard Théâtre V1.1",
   "short_name": "Soundboard",
   "description": "Soundboard Théâtre Souffler n'est pas jouer",
@@ -7,21 +7,14 @@
   "background_color": "#1e1e1e",
   "theme_color": "#B57EDC",
   "orientation": "any",
-  "scope": "/",
+  "scope": "/Soundboard-theatre/",
+"start_url": "/Soundboard-theatre/"
   "icons": [
     {
-      "src": "https://theatreboulogne.github.io/Soundboard-theatre/icons/icon-192.png",
+      "src": "icons/icon-192.png",
       "type": "image/png",
-      "sizes": "349x348",
-      "isSquare": false,
-      "isPng": true,
-      "isWebp": false,
-      "isJpg": false,
-      "width": 349,
-      "is512x512": false,
-      "is256x256": false,
-      "is192x192": false
-    }
+      "sizes": "192x192",
+        }
 ,
     {
       "src": "icons/icon-512.png",
@@ -30,7 +23,7 @@
     }
   ],
 "id": "Soundboard Théâtre Boulogne",
-  "description": "pilotage de sons à partir de simples boutons programmables"
+  "description": "pilotage de sons à partir de simples boutons programmables",
 
   "shortcuts": [
     {
