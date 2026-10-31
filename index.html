@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="fr">
 <head>
-<link rel="manifest" href="manifest.json">
+<link rel="manifest" href="./manifest.json">
 <meta name="theme-color" content="#B57EDC">
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -11,7 +11,7 @@
 <link rel="icon" href="icons/icon-192.png">
 <link rel="apple-touch-icon" href="icons/icon-192.png">
 
-<link rel="manifest" href="manifest.json">
+
 <style>
 #appVersion{
     position:fixed;
@@ -876,11 +876,9 @@ document
 
 init();
 if ('serviceWorker' in navigator) {
-    navigator.serviceWorker
-        .register('./service-worker.js')
-        .then(() => console.log('Service Worker enregistré'))
-        .catch(err => console.error(err));
-}
+  navigator.serviceWorker.register('/Soundboard-theatre/service-worker.js');
+}        
+
 </script>
 
 </body>
