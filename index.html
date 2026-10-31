@@ -26,8 +26,10 @@
     padding:3px 8px;
     border-radius:8px;
     border:1px solid rgba(181,126,220,0.5);
-    pointer-events:none;
-}body{
+    cursor:pointer;
+}
+
+body{
     margin:20px;
     background:#1e1e1e;
     color:white;
@@ -36,8 +38,10 @@
 }
 
 h1{
-    margin-bottom:15px;
+    margin:0 0 15px 0;
+    text-align:left;
 }
+
 
 .logo-wrapper{
     position:relative;
@@ -46,6 +50,7 @@ h1{
 }
 
 .logo{
+    
     display:block;
     width:120px;
     margin:auto;
@@ -241,6 +246,7 @@ h1{
 </style>
 </head>
 
+
 <body>
 
 <h1>🎵 Soundboard Théâtre</h1>
@@ -284,7 +290,39 @@ h1{
 <script>
 const APP_VERSION = "1.2.0";
 const APP_BUILD = "31/10/2026";
+const APP_AUTHOR = "Didier LOISEAU";
+
 let db;
+
+function showAbout() {
+
+    document.getElementById(
+        "aboutVersion"
+    ).textContent =
+        "Version : " + APP_VERSION;
+
+    document.getElementById(
+        "aboutBuild"
+    ).textContent =
+        "Build : " + APP_BUILD;
+
+    document.getElementById(
+        "aboutAuthor"
+    ).textContent =
+        "Auteur : " + APP_AUTHOR;
+
+    document.getElementById(
+        "aboutModal"
+    ).style.display = "flex";
+}
+
+function closeAbout() {
+
+    document.getElementById(
+        "aboutModal"
+    ).style.display = "none";
+}
+
 
 document.addEventListener(
     "DOMContentLoaded",
@@ -297,14 +335,27 @@ document.addEventListener(
 
         if (versionBox) {
 
-            versionBox.innerHTML =
-                `v${APP_VERSION}<br>${APP_BUILD}`;
+            versionBox.textContent =
+                `v${APP_VERSION}`;
+
+            versionBox.onclick =
+                showAbout;
         }
+
+        document
+            .getElementById(
+                "closeAboutBtn"
+            )
+            .addEventListener(
+                "click",
+                closeAbout
+            );
 
         document.title =
             `🎵 Soundboard Théâtre v${APP_VERSION}`;
     }
 );
+
 
 const buttons = [];
 let currentAudio = null;
@@ -1121,6 +1172,25 @@ if ('serviceWorker' in navigator) {
 
 
 </script>
+
+<div id="aboutModal" class="menu-overlay">
+    <div class="menu-box">
+        <div style="padding:20px;text-align:center;">
+            <h3>🎵 Soundboard Théâtre</h3>
+
+            <p id="aboutVersion"></p>
+
+            <p id="aboutBuild"></p>
+
+            <p id="aboutAuthor"></p>
+        </div>
+
+        <button id="closeAboutBtn">
+            Fermer
+        </button>
+    </div>
+</div>
+
 
 </body>
 
