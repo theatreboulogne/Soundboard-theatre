@@ -1,4 +1,4 @@
-{
+{{
   "name": "Soundboard Théâtre V1.1",
   "short_name": "Soundboard",
   "description": "Soundboard Théâtre Souffler n'est pas jouer",
@@ -7,6 +7,7 @@
   "background_color": "#1e1e1e",
   "theme_color": "#B57EDC",
   "orientation": "portrait",
+
   "icons": [
     {
       "src": "icons/icon-192.png",
@@ -17,6 +18,45 @@
       "src": "icons/icon-512.png",
       "sizes": "512x512",
       "type": "image/png"
+    }
+  ],
+
+  "shortcuts": [
+    {
+      "name": "Liste des sons",
+      "short_name": "Sons",
+      "description": "Ouvrir la bibliothèque des sons",
+      "url": "./?view=sounds",
+      "icons": [
+        {
+          "src": "icons/icon-192.png",
+          "sizes": "192x192"
+        }
+      ]
+    },
+    {
+      "name": "Lecture rapide",
+      "short_name": "Lecture",
+      "description": "Accès rapide au soundboard",
+      "url": "./?action=play",
+      "icons": [
+        {
+          "src": "icons/icon-192.png",
+          "sizes": "192x192"
+        }
+      ]
+    },
+    {
+      "name": "Mode vidéo",
+      "short_name": "Vidéos",
+      "description": "Afficher uniquement les vidéos",
+      "url": "./?view=videos",
+      "icons": [
+        {
+          "src": "icons/icon-192.png",
+          "sizes": "192x192"
+        }
+      ]
     }
   ]
 }
