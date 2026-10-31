@@ -259,6 +259,7 @@ h1{
         <button id="chooseBtn">🎵 Choisir un média</button>
         <button id="renameBtn">✏️ Renommer</button>
         <button id="resetBtn">🗑 Réinitialiser</button>
+	<button id="deleteBtn">❌ Supprimer le bouton</button>
         <button onclick="closeMenu()">Fermer</button>
     </div>
 </div>
@@ -721,10 +722,98 @@ if (sounds[selectedIndex]?.url) {
         sounds[selectedIndex].url
     );
 }
-delete sounds[selectedIndex];
+const newSounds = {};
+
+Object.keys(sounds)
+    .map(Number)
+    .sort((a,b) => a-b)
+    .forEach(key => {
+
+        if(key < selectedIndex){
+            newSounds[key] = sounds[key];
+        }
+        else if(key > selectedIndex){
+            newSounds[key - 1] = sounds[key];
+        }
+    });
+
+sounds = newSounds;
 
 updateButton(selectedIndex);
 saveConfig();
+};
+
+document
+.getElementById("deleteBtn")
+.onclick = async () => {
+
+    closeMenu();
+
+    if (!confirm("Supprimer ce bouton ?")) {
+        return;
+    }
+
+    stopCurrent();
+
+    const tx = db.transaction(
+        ["sounds"],
+        "readwrite"
+    );
+
+    const store = tx.objectStore("sounds");
+
+    const newSounds = {};
+    const keys = Object.keys(sounds)
+        .map(Number)
+        .sort((a, b) => a - b);
+
+    for (const key of keys) {
+
+        if (sounds[key]?.url) {
+            URL.revokeObjectURL(
+                sounds[key].url
+            );
+        }
+
+        if (key < selectedIndex) {
+
+            newSounds[key] =
+                sounds[key];
+
+        } else if (key > selectedIndex) {
+
+            newSounds[key - 1] =
+                sounds[key];
+        }
+    }
+
+    store.clear();
+
+    sounds = newSounds;
+
+    for (const [id, sound] of Object.entries(sounds)) {
+
+        const old =
+            await loadSound(
+                Number(id >= selectedIndex
+                    ? Number(id) + 1
+                    : id)
+            );
+
+        if (old) {
+
+            store.put({
+                id: Number(id),
+                label: sound.label,
+                fileName: old.fileName,
+                type: old.type,
+                blob: old.blob
+            });
+        }
+    }
+
+    saveConfig();
+    rebuildButtons();
 };
 
 async function init() {

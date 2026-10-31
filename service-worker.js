@@ -1,4 +1,4 @@
-const CACHE_NAME = "soundboard-v1";
+const CACHE_NAME = "soundboard-v1.1";
 
 const FILES_TO_CACHE = [
     "./",
