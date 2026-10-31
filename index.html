@@ -13,6 +13,7 @@
 
 
 <style>
+
 #appVersion{
     position:fixed;
     top:8px;
@@ -258,7 +259,9 @@ h1{
         alt="Logo">
 </div>
 
-<input
+<div id="appVersion"></div>
+
+  <input
     type="file"
     id="filePicker"
     accept=".mp3,.wav,.ogg,.m4a,.mp4"
@@ -276,9 +279,39 @@ h1{
     </div>
 </div>
 
-<script>
 
+
+<script>
+const APP_VERSION = "1.2.0";
+const APP_BUILD = "31/10/2026";
 let db;
+
+document.addEventListener(
+    "DOMContentLoaded",
+    () => {
+
+        const versionBox =
+            document.getElementById(
+                "appVersion"
+            );
+
+        if (versionBox) {
+
+            versionBox.innerHTML =
+                `v${APP_VERSION}<br>${APP_BUILD}`;
+        }
+
+        document.title =
+            `🎵 Soundboard Théâtre v${APP_VERSION}`;
+    }
+);
+
+const buttons = [];
+let currentAudio = null;
+let currentVideo = null;
+let currentButtonIndex = null;
+let currentButtonElement = null;
+let selectedIndex = null;
 
 async function openDatabase() {
 
@@ -308,11 +341,24 @@ async function openDatabase() {
             resolve(db);
         };
 
-        request.onerror = () => reject();
+request.onerror = event => {
+    console.error(
+        "Erreur ouverture IndexedDB",
+        event
+    );
+    reject(event);
+};
     });
 }
 
-async function saveSound(index,file,label){
+
+async function saveSound(
+    index,
+    file,
+    label
+) {
+
+    if (!file) return;
 
     const tx =
         db.transaction(
@@ -324,35 +370,77 @@ async function saveSound(index,file,label){
         tx.objectStore("sounds");
 
     store.put({
-        id:index,
-        label,
-        fileName:file.name,
-        type:file.type,
-        blob:file
+        id: index,
+        label: label || file.name,
+        fileName: file.name,
+        type: file.type || "",
+        blob: file
     });
 }
-async function loadSound(index){
 
-    return new Promise(resolve=>{
+function saveConfig() {
 
-        const tx =
-            db.transaction(
-                ["sounds"],
-                "readonly"
+    try {
+
+        localStorage.setItem(
+            "soundboardConfig",
+            JSON.stringify(sounds)
+        );
+
+    } catch (err) {
+
+        console.error(
+            "Erreur sauvegarde configuration",
+            err
+        );
+    }
+}
+
+async function loadSound(index) {
+
+    return new Promise(resolve => {
+
+        try {
+
+            const tx =
+                db.transaction(
+                    ["sounds"],
+                    "readonly"
+                );
+
+            const store =
+                tx.objectStore("sounds");
+
+            const req =
+                store.get(index);
+
+            req.onsuccess = () => {
+                resolve(req.result || null);
+            };
+
+            req.onerror = () => {
+
+                console.error(
+                    "Erreur lecture son",
+                    index
+                );
+
+                resolve(null);
+            };
+
+        } catch (err) {
+
+            console.error(
+                "Erreur IndexedDB",
+                err
             );
 
-        const store =
-            tx.objectStore("sounds");
+            resolve(null);
+        }
 
-        const req =
-            store.get(index);
-
-        req.onsuccess = () =>
-            resolve(req.result);
     });
 }
-
-async function loadAllSounds(){
+async function loadAllSounds() {
 
     const tx =
         db.transaction(
@@ -368,24 +456,80 @@ async function loadAllSounds(){
 
     request.onsuccess = () => {
 
+        sounds = {};
+
         request.result.forEach(sound => {
 
-    const url = URL.createObjectURL(sound.blob);
+            try {
 
-    sounds[sound.id] = {
-        label: sound.label,
-        fileName: sound.fileName,
-        type: sound.type.startsWith("video")
-            ? "video"
-            : "audio",
-        url
+                if (!sound) return;
+
+                if (!sound.blob) {
+                    console.warn(
+                        "Blob manquant pour",
+                        sound.id
+                    );
+                    return;
+                }
+
+                const url =
+                    URL.createObjectURL(
+                        sound.blob
+                    );
+
+                sounds[sound.id] = {
+
+                    label:
+                        sound.label ||
+                        `Son ${sound.id}`,
+
+                    fileName:
+                        sound.fileName ||
+                        "Fichier inconnu",
+
+                    type:
+                        sound.type &&
+                        sound.type.startsWith(
+                            "video"
+                        )
+                            ? "video"
+                            : "audio",
+
+                    url
+                };
+
+            } catch (err) {
+
+                console.error(
+                    "Erreur chargement son",
+                    sound?.id,
+                    err
+                );
+
+            }
+
+        });
+
+        saveConfig();
+
+        rebuildButtons();
     };
-});
+
+    request.onerror = err => {
+
+        console.error(
+            "Erreur lecture IndexedDB",
+            err
+        );
+
+        sounds = {};
 
         rebuildButtons();
     };
 }
 
+
+   
 
 document
 .getElementById("resetAllBtn")
@@ -426,25 +570,24 @@ localStorage.removeItem("soundboardConfig");
 
 const grid = document.getElementById("grid");
 
-let sounds =
-JSON.parse(localStorage.getItem("soundboardConfig") || "{}");
+let sounds = {};
 
-const buttons=[];
-
-let currentAudio=null;
-let currentVideo=null;
-let currentButtonIndex=null;
-let currentButtonElement=null;
-
-let selectedIndex=null;
-
-function saveConfig(){
-    localStorage.setItem(
-        "soundboardConfig",
-        JSON.stringify(sounds)
+try {
+    sounds = JSON.parse(
+        localStorage.getItem("soundboardConfig") || "{}"
     );
-}
+} catch (e) {
+    console.error(
+        "Configuration corrompue",
+        e
+    );
 
+    localStorage.removeItem(
+        "soundboardConfig"
+    );
+
+    sounds = {};
+}
 function updateButton(index){
 
     const btn=buttons[index];
@@ -655,53 +798,132 @@ document.getElementById("newSoundBtn")
 
 document
 .getElementById("chooseBtn")
-.onclick=()=>{
+.onclick = () => {
 
     closeMenu();
 
     const picker =
         document.getElementById("filePicker");
 
-    picker.value="";
+    picker.value = "";
 
-    picker.onchange=e=>{
+    picker.removeAttribute("capture");
+
+    picker.accept =
+        ".mp3,.wav,.ogg,.m4a,.mp4";
+
+    picker.onchange = e => {
 
         const file =
             e.target.files[0];
 
-        if(!file) return;
+        if (!file) return;
 
-        sounds[selectedIndex]={
-    fileName:file.name,
-    label:file.name,
-    type:file.type.startsWith("video/")
-        ? "video"
-        : "audio",
-    url:URL.createObjectURL(file)
-};
+        const allowedExtensions = [
+            ".mp3",
+            ".wav",
+            ".ogg",
+            ".m4a",
+            ".mp4"
+        ];
 
-saveSound(
-    selectedIndex,
-    file,
-    file.name
-);
+        const allowedMimeTypes = [
+            "",
+            "audio/mpeg",
+            "audio/mp3",
+            "audio/wav",
+            "audio/x-wav",
+            "audio/wave",
+            "audio/vnd.wave",
+            "audio/ogg",
+            "audio/mp4",
+            "audio/x-m4a",
+            "video/mp4"
+        ];
 
-updateButton(selectedIndex);
-saveConfig();
+        const lowerName =
+            file.name.toLowerCase();
+
+        const extensionValid =
+            allowedExtensions.some(ext =>
+                lowerName.endsWith(ext)
+            );
+
+        const mimeValid =
+            file.type === "" ||
+            allowedMimeTypes.includes(file.type) ||
+            file.type.startsWith("audio/") ||
+            file.type.startsWith("video/");
+
+        if (!extensionValid) {
+
+            alert(
+                "Extension non autorisée.\n\n" +
+                "Formats acceptés :\n" +
+                "• MP3\n" +
+                "• WAV\n" +
+                "• OGG\n" +
+                "• M4A\n" +
+                "• MP4"
+            );
+
+            picker.value = "";
+            return;
+        }
+
+        if (!mimeValid) {
+
+            alert(
+                "Type de fichier non pris en charge.\n\n" +
+                "Type détecté : " +
+                (file.type || "inconnu")
+            );
+
+            picker.value = "";
+            return;
+        }
+
+        sounds[selectedIndex] = {
+            fileName: file.name,
+
+            label:
+                sounds[selectedIndex]?.label ||
+                file.name,
+
+            type:
+                file.type.startsWith("video/")
+                    ? "video"
+                    : "audio",
+
+            url: URL.createObjectURL(file)
+        };
+
+        saveSound(
+            selectedIndex,
+            file,
+            sounds[selectedIndex].label
+        );
+
+        updateButton(selectedIndex);
+
+        saveConfig();
     };
-
     picker.click();
 };
 
+
 document
 .getElementById("renameBtn")
-.onclick=()=>{
+.onclick = () => {
+
     closeMenu();
 
     if (!sounds[selectedIndex]) {
+
         alert(
             "Veuillez d'abord choisir un fichier audio ou vidéo avant de renommer ce bouton."
         );
+
         return;
     }
 
@@ -716,17 +938,31 @@ document
 
     loadSound(selectedIndex)
     .then(sound => {
+
         if (sound) {
+
             saveSound(
                 selectedIndex,
                 sound.blob,
                 label
             );
         }
-    });
 
-    updateButton(selectedIndex);
-    saveConfig();
+        updateButton(selectedIndex);
+
+        saveConfig();
+    })
+    .catch(err => {
+
+        console.error(
+            "Erreur renommage",
+            err
+        );
+
+        updateButton(selectedIndex);
+
+        saveConfig();
+    });
 };
 document
 .getElementById("resetBtn")
@@ -882,8 +1118,10 @@ if ('serviceWorker' in navigator) {
   navigator.serviceWorker.register('/Soundboard-theatre/service-worker.js');
 }        
 
+
+
 </script>
-<div id="appVersion">v1.1</div>
+
 </body>
 
 </html>

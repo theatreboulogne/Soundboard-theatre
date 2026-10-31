@@ -3,16 +3,12 @@
   "name": "Soundboard Théâtre",
   "short_name": "Soundboard",
   "description": "Pilotage de sons à partir de boutons programmables",
-
   "start_url": "/Soundboard-theatre/",
   "scope": "/Soundboard-theatre/",
-
   "display": "standalone",
   "orientation": "any",
-
   "background_color": "#1e1e1e",
   "theme_color": "#B57EDC",
-
   "icons": [
     {
       "src": "icons/icon-192.png",
@@ -23,27 +19,6 @@
       "src": "icons/icon-512.png",
       "sizes": "512x512",
       "type": "image/png"
-    }
-  ],
-
-  "shortcuts": [
-    {
-      "name": "Liste des sons",
-      "short_name": "Sons",
-      "description": "Ouvrir la bibliothèque des sons",
-      "url": "./?view=sounds"
-    },
-    {
-      "name": "Lecture rapide",
-      "short_name": "Lecture",
-      "description": "Accès rapide au soundboard",
-      "url": "./?action=play"
-    },
-    {
-      "name": "Mode vidéo",
-      "short_name": "Vidéos",
-      "description": "Afficher uniquement les vidéos",
-      "url": "./?view=videos"
     }
   ]
 }
