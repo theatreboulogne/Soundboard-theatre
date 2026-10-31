@@ -1,5 +1,5 @@
 {
-  "name": "Soundboard Théâtre V1.1",
+  "name": "Soundboard Théâtre",
   "short_name": "Soundboard",
   "description": "Soundboard Théâtre Souffler n'est pas jouer",
   "start_url": "./",
@@ -9,6 +9,8 @@
   "orientation": "any",
   "scope": "/Soundboard-theatre/",
 "start_url": "/Soundboard-theatre/"
+}
+
   "icons": [
     {
       "src": "icons/icon-192.png",
