@@ -1,5 +1,7 @@
-const CACHE_NAME = "soundboard-v1.1";
-
+const APP_VERSION = "1.2.0";
+const APP_BUILD = "31/10/2026";
+const CACHE_NAME =
+    `soundboard-v${APP_VERSION}-${APP_BUILD}`;
 
 const FILES_TO_CACHE = [
     "./",
