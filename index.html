@@ -13,8 +13,20 @@
 
 <link rel="manifest" href="manifest.json">
 <style>
-
-body{
+#appVersion{
+    position:fixed;
+    top:8px;
+    right:12px;
+    z-index:9999;
+    font-size:12px;
+    font-weight:bold;
+    color:#B57EDC;
+    background:rgba(0,0,0,0.6);
+    padding:3px 8px;
+    border-radius:8px;
+    border:1px solid rgba(181,126,220,0.5);
+    pointer-events:none;
+}body{
     margin:20px;
     background:#1e1e1e;
     color:white;
@@ -872,4 +884,5 @@ if ('serviceWorker' in navigator) {
 </script>
 
 </body>
+<div id="appVersion">v1.1</div>
 </html>
