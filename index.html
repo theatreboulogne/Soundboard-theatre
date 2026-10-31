@@ -38,16 +38,26 @@ body{
 }
 
 h1{
-    margin:0 0 15px 0;
+    margin:0 0 10px 0;
     text-align:left;
 }
+
+.subtitle{
+    display:block;
+    font-size:15px;
+     font-style:italic;
+    color:#B57EDC;
+    margin-top:4px;
+}
+
 
 
 .logo-wrapper{
     position:relative;
-    width:300px;
+    width:350px;
     margin:0 auto 20px auto;
 }
+
 
 .logo{
     
@@ -135,29 +145,22 @@ h1{
 }
 
 #resetAllBtn{
-
     position:absolute;
-    left:250px;
-    top:60%;
+
+    left:100%;
+    margin-left:20px;
+
+    top:50%;
     transform:translateY(-50%);
-    
-    border:none;
-    
-  
 
     background:#d00000;
-
     color:white;
-
     border:none;
-
     border-radius:8px;
-
     padding:12px;
-
     cursor:pointer;
+    white-space:nowrap;
 }
-
 #resetAllBtn:hover{
     background:#800080;
 }
@@ -249,7 +252,12 @@ h1{
 
 <body>
 
-<h1>🎵 Soundboard Théâtre</h1>
+<h1>
+    🎵 Soundboard Théâtre
+    <span class="subtitle">
+        Souffler n'est pas jouer
+    </span>
+</h1>
 
 <div class="logo-wrapper">
 
@@ -288,7 +296,7 @@ h1{
 
 
 <script>
-const APP_VERSION = "1.2.1";
+const APP_VERSION = "1.2.2";
 const APP_BUILD = "31/10/2026";
 const APP_AUTHOR = "Didier LOISEAU";
 
@@ -1213,22 +1221,72 @@ if ('serviceWorker' in navigator) {
 
 <div id="aboutModal" class="menu-overlay">
     <div class="menu-box">
-        <div style="padding:20px;text-align:center;">
-            <h3>🎵 Soundboard Théâtre</h3>
+
+        <div
+            style="
+                padding:20px;
+                text-align:center;
+                position:relative;
+                min-height:180px;
+            "
+        >
+
+        <h3 style="margin-bottom:4px;">
+    🎵 Soundboard Théâtre
+</h3>
+
+<div
+    style="
+        font-size:13px;
+        color:#666;
+        font-style:italic;
+        margin-bottom:15px;
+    "
+>
+    Souffler n'est pas jouer
+</div>
+<div
+    style="
+        width:80%;
+        height:2px;
+        margin:12px auto 18px auto;
+        background:linear-gradient(
+            to right,
+            transparent,
+            #B57EDC,
+            transparent
+        );
+        border-radius:2px;
+    "
+></div>
 
             <p id="aboutVersion"></p>
 
             <p id="aboutBuild"></p>
 
             <p id="aboutAuthor"></p>
+
+            <img
+                src="logoDL.png"
+                alt="Logo DL"
+                style="
+                    position:absolute;
+                    right:10px;
+                    bottom:10px;
+                    width:30px;
+                    height:auto;
+                    opacity:0.9;
+                "
+            >
+
         </div>
 
         <button id="closeAboutBtn">
             Fermer
         </button>
+
     </div>
 </div>
-
 
 </body>
 
