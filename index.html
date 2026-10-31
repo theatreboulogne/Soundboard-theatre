@@ -617,11 +617,22 @@ function rebuildButtons()
         createButton(i);
     }
 }
-function showMenu(){
-    document.getElementById("menuOverlay").style.display="flex";
-}
+function showMenu() {
 
-function closeMenu(){
+    const deleteBtn =
+        document.getElementById("deleteBtn");
+
+    // Le bouton 0 ne peut jamais être supprimé
+    if (selectedIndex === 0) {
+        deleteBtn.style.display = "none";
+    } else {
+        deleteBtn.style.display = "block";
+    }
+
+    document
+        .getElementById("menuOverlay")
+        .style.display = "flex";
+}function closeMenu(){
     document.getElementById("menuOverlay").style.display="none";
 }
 
@@ -704,119 +715,147 @@ saveConfig();
 
 document
 .getElementById("resetBtn")
-.onclick=()=>{
+.onclick = () => {
 
     closeMenu();
 
     const tx =
-    db.transaction(
-        ["sounds"],
-        "readwrite"
-    );
+        db.transaction(
+            ["sounds"],
+            "readwrite"
+        );
 
-tx.objectStore("sounds")
-  .delete(selectedIndex);
+    tx.objectStore("sounds")
+      .delete(selectedIndex);
 
-if (sounds[selectedIndex]?.url) {
-    URL.revokeObjectURL(
-        sounds[selectedIndex].url
-    );
-}
-const newSounds = {};
+    if (sounds[selectedIndex]?.url) {
 
-Object.keys(sounds)
-    .map(Number)
-    .sort((a,b) => a-b)
-    .forEach(key => {
+        URL.revokeObjectURL(
+            sounds[selectedIndex].url
+        );
 
-        if(key < selectedIndex){
-            newSounds[key] = sounds[key];
-        }
-        else if(key > selectedIndex){
-            newSounds[key - 1] = sounds[key];
-        }
-    });
+    }
 
-sounds = newSounds;
+    delete sounds[selectedIndex];
 
-updateButton(selectedIndex);
-saveConfig();
+    updateButton(selectedIndex);
+
+    saveConfig();
 };
-
 document
 .getElementById("deleteBtn")
 .onclick = async () => {
 
     closeMenu();
 
-    if (!confirm("Supprimer ce bouton ?")) {
+    if (selectedIndex === 0) {
+
+        alert(
+            "Le bouton 0 ne peut pas être supprimé."
+        );
+
+        return;
+    }
+
+    if (
+        !confirm(
+            "Supprimer ce bouton ?"
+        )
+    ) {
         return;
     }
 
     stopCurrent();
 
-    const tx = db.transaction(
-        ["sounds"],
-        "readwrite"
-    );
-
-    const store = tx.objectStore("sounds");
-
-    const newSounds = {};
-    const keys = Object.keys(sounds)
+    const keys =
+        Object.keys(sounds)
         .map(Number)
-        .sort((a, b) => a - b);
+        .sort((a,b)=>a-b);
+
+    const records = {};
 
     for (const key of keys) {
 
-        if (sounds[key]?.url) {
-            URL.revokeObjectURL(
-                sounds[key].url
-            );
-        }
+        records[key] =
+            await loadSound(key);
+
+    }
+
+    const tx =
+        db.transaction(
+            ["sounds"],
+            "readwrite"
+        );
+
+    const store =
+        tx.objectStore("sounds");
+
+    await new Promise(resolve => {
+
+        const req =
+            store.clear();
+
+        req.onsuccess = resolve;
+        req.onerror = resolve;
+
+    });
+
+    const newSounds = {};
+
+    for (const key of keys) {
 
         if (key < selectedIndex) {
 
             newSounds[key] =
                 sounds[key];
 
-        } else if (key > selectedIndex) {
+            if (records[key]) {
+
+                store.put({
+                    id: key,
+                    label:
+                        records[key].label,
+                    fileName:
+                        records[key].fileName,
+                    type:
+                        records[key].type,
+                    blob:
+                        records[key].blob
+                });
+
+            }
+
+        } else if (
+            key > selectedIndex
+        ) {
 
             newSounds[key - 1] =
                 sounds[key];
+
+            if (records[key]) {
+
+                store.put({
+                    id: key - 1,
+                    label:
+                        records[key].label,
+                    fileName:
+                        records[key].fileName,
+                    type:
+                        records[key].type,
+                    blob:
+                        records[key].blob
+                });
+
+            }
         }
     }
-
-    store.clear();
 
     sounds = newSounds;
 
-    for (const [id, sound] of Object.entries(sounds)) {
-
-        const old =
-            await loadSound(
-                Number(id >= selectedIndex
-                    ? Number(id) + 1
-                    : id)
-            );
-
-        if (old) {
-
-            store.put({
-                id: Number(id),
-                label: sound.label,
-                fileName: old.fileName,
-                type: old.type,
-                blob: old.blob
-            });
-        }
-    }
-
     saveConfig();
-    rebuildButtons();
-};
 
-async function init() {
+    rebuildButtons();
+};async function init() {
 
     await openDatabase();
 
