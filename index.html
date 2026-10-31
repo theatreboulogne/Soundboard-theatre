@@ -696,35 +696,38 @@ saveConfig();
 document
 .getElementById("renameBtn")
 .onclick=()=>{
-
     closeMenu();
 
-    const label=prompt(
+    if (!sounds[selectedIndex]) {
+        alert(
+            "Veuillez d'abord choisir un fichier audio ou vidéo avant de renommer ce bouton."
+        );
+        return;
+    }
+
+    const label = prompt(
         "Nouveau libellé",
         sounds[selectedIndex]?.label || ""
     );
 
-    if(!label) return;
-
-    sounds[selectedIndex] ??= {};
+    if (!label) return;
 
     sounds[selectedIndex].label = label;
 
-loadSound(selectedIndex)
-.then(sound => {
-    if(sound){
-        saveSound(
-            selectedIndex,
-            sound.blob,
-            label
-        );
-    }
-});
+    loadSound(selectedIndex)
+    .then(sound => {
+        if (sound) {
+            saveSound(
+                selectedIndex,
+                sound.blob,
+                label
+            );
+        }
+    });
 
-updateButton(selectedIndex);
-saveConfig();
+    updateButton(selectedIndex);
+    saveConfig();
 };
-
 document
 .getElementById("resetBtn")
 .onclick = () => {
