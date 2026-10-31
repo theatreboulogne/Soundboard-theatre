@@ -859,6 +859,8 @@ document
     picker.value = "";
 
     picker.removeAttribute("capture");
+capture="camera"
+
 
     picker.accept =
         ".mp3,.wav,.ogg,.m4a,.mp4";
@@ -891,20 +893,56 @@ document
             "audio/x-m4a",
             "video/mp4"
         ];
-
+const forbiddenExtensions = [
+    ".exe",
+    ".bat",
+    ".cmd",
+    ".msi",
+    ".apk",
+    ".zip",
+    ".rar",
+    ".7z",
+    ".pdf",
+    ".doc",
+    ".docx",
+    ".xls",
+    ".xlsx",
+    ".ppt",
+    ".pptx",
+    ".txt",
+    ".html",
+    ".htm",
+    ".js",
+    ".php"
+];
         const lowerName =
             file.name.toLowerCase();
 
+const forbiddenFile =
+    forbiddenExtensions.some(ext =>
+        lowerName.endsWith(ext)
+    );
+
+if (forbiddenFile) {
+
+    alert(
+        "Ce type de fichier n'est pas autorisé."
+    );
+
+    picker.value = "";
+
+    return;
+}
         const extensionValid =
             allowedExtensions.some(ext =>
                 lowerName.endsWith(ext)
             );
 
-        const mimeValid =
-            file.type === "" ||
-            allowedMimeTypes.includes(file.type) ||
-            file.type.startsWith("audio/") ||
-            file.type.startsWith("video/");
+      const mimeValid =
+    file.type === "" ||
+    file.type.startsWith("audio/") ||
+    file.type === "video/mp4";
+
 
         if (!extensionValid) {
 
