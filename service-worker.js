@@ -1,4 +1,4 @@
-const APP_VERSION = "1.3.0";
+const APP_VERSION = "1.4.0";
 const APP_BUILD = "01/11/2026";
 const CACHE_NAME =
     `soundboard-v${APP_VERSION}-${APP_BUILD}`;
