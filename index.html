@@ -250,14 +250,14 @@ h1{
 }
 
 .title-block{
-    width:100%
+    width:100%;
     text-align:left;
     margin-bottom:15px;
 }
 
 #appVersion{
     margin-top:0px;
-    margin-right:20px
+    margin-right:20px;
     padding:4px 10px;
     font-size:10px;
     border:none;
@@ -303,6 +303,148 @@ h1{
         height:80px;
         font-size:18px;
     }
+}
+.confirm-modal {
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,.65);
+    display: none;
+    justify-content: center;
+    align-items: center;
+    z-index: 99999;
+}
+
+.confirm-modal.show {
+    display: flex;
+}
+
+.confirm-box {
+    width: 320px;
+    max-width: 90vw;
+    background: #1e1e1e;
+    border: 3px solid #B57EDC;
+    border-radius: 15px;
+    padding: 25px;
+    text-align: center;
+    color: white;
+    box-shadow: 0 0 25px rgba(0,0,0,.5);
+}
+
+.confirm-logo {
+    width: 70px;
+    padding: 8px;
+    background: white;
+    border-radius: 50%;
+    border: 3px solid #B57EDC;
+    margin-bottom: 15px;
+}
+
+.confirm-box h2 {
+    margin: 0 0 4px 0;
+}
+
+.confirm-subtitle {
+    color: #B57EDC;
+    font-style: italic;
+    margin-bottom: 20px;
+}
+
+.confirm-message {
+    font-size: 17px;
+    margin-bottom: 25px;
+    line-height: 1.4;
+}
+
+.confirm-buttons {
+    display: flex;
+    justify-content: center;
+    gap: 15px;
+}
+
+.btn-confirm,
+.btn-cancel {
+    border: none;
+    border-radius: 8px;
+    padding: 10px 20px;
+    color: white;
+    cursor: pointer;
+    font-size: 15px;
+    font-weight: bold;
+}
+
+.btn-confirm {
+    background: #18b84a;
+}
+
+.btn-confirm:hover {
+    background: #14913b;
+}
+
+.btn-cancel {
+    background: #d00001;
+}
+
+.btn-cancel:hover {
+    background: #a30000;
+}
+
+.alert-modal {
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, .65);
+    display: none;
+    justify-content: center;
+    align-items: center;
+    z-index: 100000;
+}
+
+.alert-modal.show {
+    display: flex;
+}
+
+.alert-box {
+    width: 320px;
+    max-width: 90vw;
+    background: #1e1e1e;
+    border: 3px solid #B57EDC;
+    border-radius: 15px;
+    padding: 25px;
+    text-align: center;
+    color: white;
+}
+
+.alert-logo {
+    width: 70px;
+    padding: 8px;
+    background: white;
+    border-radius: 50%;
+    border: 3px solid #B57EDC;
+    margin-bottom: 15px;
+}
+
+.alert-subtitle {
+    color: #B57EDC;
+    font-style: italic;
+    margin-bottom: 20px;
+}
+
+.alert-message {
+    margin-bottom: 20px;
+    line-height: 1.5;
+}
+
+.alert-button {
+    background: #B57EDC;
+    color: white;
+    border: none;
+    border-radius: 8px;
+    padding: 10px 25px;
+    cursor: pointer;
+    font-weight: bold;
+}
+
+.alert-button:hover {
+    background: #800080;
 }
 
 </style>
@@ -378,8 +520,8 @@ h1{
 
 
 <script>
-const APP_VERSION = "1.4.0";
-const APP_BUILD = "01/11/2026";
+const APP_VERSION = "1.4.1";
+const APP_BUILD = "02/11/2026";
 const APP_AUTHOR = "Didier LOISEAU";
 
 let db;
@@ -676,11 +818,13 @@ document
 .getElementById("resetAllBtn")
 .addEventListener("click",async ()=>{
 
-    if(!confirm(
-        "Supprimer tous les sons ?"
-    )){
-        return;
-    }
+    if (
+    !await customConfirm(
+        "Réinitialiser tous les boutons et supprimer leurs fichiers associés ?"
+    )
+) {
+    return;
+}
 
     const tx =
         db.transaction(
@@ -949,13 +1093,12 @@ document
     picker.value = "";
 
     picker.removeAttribute("capture");
-capture="camera"
 
 
     picker.accept =
         ".mp3,.wav,.ogg,.m4a,.mp4";
 
-    picker.onchange = e => {
+    picker.onchange = async e => {
 
         const file =
             e.target.files[0];
@@ -1015,9 +1158,9 @@ const forbiddenFile =
 
 if (forbiddenFile) {
 
-    alert(
-        "Ce type de fichier n'est pas autorisé."
-    );
+    await customAlert(
+    "Ce type de fichier n'est pas autorisé."
+);
 
     picker.value = "";
 
@@ -1036,15 +1179,15 @@ if (forbiddenFile) {
 
         if (!extensionValid) {
 
-            alert(
-                "Extension non autorisée.\n\n" +
-                "Formats acceptés :\n" +
-                "• MP3\n" +
-                "• WAV\n" +
-                "• OGG\n" +
-                "• M4A\n" +
-                "• MP4"
-            );
+            await customAlert(
+    "Extension non autorisée.<br><br>" +
+    "Formats acceptés :<br>" +
+    "• MP3<br>" +
+    "• WAV<br>" +
+    "• OGG<br>" +
+    "• M4A<br>" +
+    "• MP4"
+);
 
             picker.value = "";
             return;
@@ -1052,11 +1195,11 @@ if (forbiddenFile) {
 
         if (!mimeValid) {
 
-            alert(
-                "Type de fichier non pris en charge.\n\n" +
-                "Type détecté : " +
-                (file.type || "inconnu")
-            );
+            await customAlert(
+    "Type de fichier non pris en charge.<br><br>" +
+    "Type détecté : " +
+    (file.type || "inconnu")
+);
 
             picker.value = "";
             return;
@@ -1093,25 +1236,27 @@ if (forbiddenFile) {
 
 document
 .getElementById("renameBtn")
-.onclick = () => {
+.onclick = async () => {    
 
-    closeMenu();
+closeMenu();
 
     if (!sounds[selectedIndex]) {
 
-        alert(
-            "Veuillez d'abord choisir un fichier audio ou vidéo avant de renommer ce bouton."
-        );
-
+        await customAlert(
+    "Veuillez d'abord choisir un fichier audio ou vidéo avant de renommer ce bouton."
+);
         return;
     }
 
-    const label = prompt(
+   const label =
+    await customPrompt(
         "Nouveau libellé",
         sounds[selectedIndex]?.label || ""
     );
 
-    if (!label) return;
+if (!label) {
+    return;
+}
 
     sounds[selectedIndex].label = label;
 
@@ -1180,20 +1325,20 @@ document
 
     if (selectedIndex === 0) {
 
-        alert(
-            "Le bouton 0 ne peut pas être supprimé."
-        );
+        await customAlert(
+    "Impossible de supprimer le dernier bouton."
+);
 
         return;
     }
 
     if (
-        !confirm(
-            "Supprimer ce bouton ?"
-        )
-    ) {
-        return;
-    }
+    !await customConfirm(
+        "Supprimer ce bouton ?"
+    )
+) {
+    return;
+}
 
     stopCurrent();
 
@@ -1302,8 +1447,166 @@ init();
 if ('serviceWorker' in navigator) {
   navigator.serviceWorker.register('/Soundboard-theatre/service-worker.js');
 }        
+function customConfirm(message) {
 
+    return new Promise(resolve => {
 
+        const modal =
+            document.getElementById(
+                "confirmModal"
+            );
+
+        const msg =
+            document.getElementById(
+                "confirmMessage"
+            );
+
+        const btnYes =
+            document.getElementById(
+                "confirmYes"
+            );
+
+        const btnNo =
+            document.getElementById(
+                "confirmNo"
+            );
+
+        msg.textContent = message;
+
+        modal.classList.add("show");
+
+        const close = result => {
+
+            modal.classList.remove(
+                "show"
+            );
+
+            btnYes.onclick = null;
+            btnNo.onclick = null;
+
+            resolve(result);
+        };
+
+        btnYes.onclick =
+            () => close(true);
+
+        btnNo.onclick =
+            () => close(false);
+    });
+}
+
+function customAlert(message) {
+
+    return new Promise(resolve => {
+
+        const modal =
+            document.getElementById(
+                "alertModal"
+            );
+
+        const msg =
+            document.getElementById(
+                "alertMessage"
+            );
+
+        const btn =
+            document.getElementById(
+                "alertOk"
+            );
+
+        msg.innerHTML = message;
+
+        modal.classList.add("show");
+
+        btn.onclick = () => {
+
+            modal.classList.remove(
+                "show"
+            );
+
+            resolve();
+        };
+    });
+}
+
+function customPrompt(
+    title,
+    defaultValue = ""
+) {
+    return new Promise(resolve => {
+
+        const modal =
+            document.getElementById(
+                "promptModal"
+            );
+
+        const input =
+            document.getElementById(
+                "promptInput"
+            );
+
+        const btnOk =
+            document.getElementById(
+                "promptOk"
+            );
+
+        const btnCancel =
+            document.getElementById(
+                "promptCancel"
+            );
+
+        input.value = defaultValue;
+
+        modal.classList.add(
+            "show"
+        );
+
+        setTimeout(() => {
+            input.focus();
+            input.select();
+        }, 100);
+
+        const close = value => {
+
+            modal.classList.remove(
+                "show"
+            );
+
+            btnOk.onclick = null;
+            btnCancel.onclick = null;
+
+            resolve(value);
+        };
+
+        btnOk.onclick = () => {
+
+            const value =
+                input.value.trim();
+
+            close(
+                value || null
+            );
+        };
+
+        btnCancel.onclick =
+            () => close(null);
+
+        input.onkeydown = e => {
+
+            if (
+                e.key === "Enter"
+            ) {
+                btnOk.click();
+            }
+
+            if (
+                e.key === "Escape"
+            ) {
+                btnCancel.click();
+            }
+        };
+    });
+}
 
 </script>
 
@@ -1375,7 +1678,115 @@ if ('serviceWorker' in navigator) {
 
     </div>
 </div>
+<div id="confirmModal" class="confirm-modal">
+    <div class="confirm-box">
 
+        <img
+            src="logo theatre boulogne.jpg"
+            class="confirm-logo"
+            alt="Logo"
+        >
+
+        <h2>🎵 Soundboard Théâtre</h2>
+
+        <div class="confirm-subtitle">
+            Souffler n'est pas jouer
+        </div>
+
+        <div id="confirmMessage" class="confirm-message">
+            Confirmation
+        </div>
+
+        <div class="confirm-buttons">
+            <button id="confirmYes" class="btn-confirm">
+                ✅ Oui
+            </button>
+
+            <button id="confirmNo" class="btn-cancel">
+                ❌ Non
+            </button>
+        </div>
+
+    </div>
+</div>
+
+<div id="alertModal" class="alert-modal">
+    <div class="alert-box">
+
+        <img
+            src="logo theatre boulogne.jpg"
+            class="alert-logo"
+            alt="Logo"
+        >
+
+        <h2>🎵 Soundboard Théâtre</h2>
+
+        <div class="alert-subtitle">
+            Souffler n'est pas jouer
+        </div>
+
+        <div
+            id="alertMessage"
+            class="alert-message"
+        ></div>
+
+        <button
+            id="alertOk"
+            class="alert-button"
+        >
+            Fermer
+        </button>
+
+    </div>
+</div>
+
+<div id="promptModal" class="alert-modal">
+    <div class="alert-box">
+
+        <img
+            src="logo theatre boulogne.jpg"
+            class="alert-logo"
+            alt="Logo"
+        >
+
+        <h2>🎵 Soundboard Théâtre</h2>
+
+        <div class="alert-subtitle">
+            Souffler n'est pas jouer
+        </div>
+
+        <input
+            id="promptInput"
+            type="text"
+            style="
+                width:100%;
+                box-sizing:border-box;
+                padding:10px;
+                border-radius:8px;
+                border:2px solid #B57EDC;
+                margin-bottom:20px;
+                font-size:16px;
+            "
+        >
+
+        <div class="confirm-buttons">
+            <button
+                id="promptOk"
+                class="btn-confirm"
+            >
+                ✅ Valider
+            </button>
+
+            <button
+                id="promptCancel"
+                class="btn-cancel"
+            >
+                ❌ Annuler
+            </button>
+        </div>
+
+    </div>
+</div>
 </body>
 
 </html>

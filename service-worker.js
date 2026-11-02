@@ -1,5 +1,5 @@
-const APP_VERSION = "1.4.0";
-const APP_BUILD = "01/11/2026";
+const APP_VERSION = "1.4.1";
+const APP_BUILD = "02/11/2026";
 const CACHE_NAME =
     `soundboard-v${APP_VERSION}-${APP_BUILD}`;
 
@@ -8,6 +8,7 @@ const FILES_TO_CACHE = [
     "./index.html",
     "./manifest.json",
     "./logo theatre boulogne.jpg",
+    "./logoDL.png",
     "./icons/icon-192.png",
     "./icons/icon-512.png"
 ];
