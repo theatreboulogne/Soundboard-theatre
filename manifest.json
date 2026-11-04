@@ -1,8 +1,7 @@
 {
-  "id": "Soundboard Théâtre Boulogne",
+  "id": "Soundboard-TheatreBoulogne",
   "name": "Soundboard Théâtre",
   "short_name": "Soundboard",
-"version": "1.5",
   "description": "Pilotage de sons à partir de boutons programmables",
   "start_url": "/Soundboard-theatre/",
   "scope": "/Soundboard-theatre/",
